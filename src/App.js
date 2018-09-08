@@ -1,18 +1,39 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import fire from './config/Fire';
 import './App.css';
+import Login from './Login';
+import Home from './Home';
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: {},
+    }
+  }
+
+  componentDidMount() {
+    this.authListener();
+  }
+
+  authListener() {
+    fire.auth().onAuthStateChanged((user) => {
+      console.log(user);
+      if (user) {
+        this.setState({ user });
+        localStorage.setItem('user', user.id);
+      } else {
+        this. setState({ user: null });
+        localStorage.removeItem('user');
+      }
+    });
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        {this.state.user ? (<Home />) : (<Login/>)}
       </div>
     );
   }
